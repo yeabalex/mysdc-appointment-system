@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the appointment details URL
-    const appointmentUrl = `${BASE_URL}/appointments/${appointmentId}`;
+    const appointmentUrl = `${BASE_URL}/admin`;
     
     // Format the current date and time
     const currentDateTime = new Date().toLocaleString('en-US', {

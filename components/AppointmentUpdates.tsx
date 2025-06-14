@@ -25,6 +25,7 @@ export default function AppointmentUpdates({ initialData }: AppointmentUpdatesPr
     const intervalId = setInterval(async () => {
       try {
         const updatedData = await getRecentAppointmentList();
+        
         setAppointments(updatedData);
         setError(null);
       } catch (err) {
