@@ -4,8 +4,8 @@ import RegisterForm from '@/components/forms/RegisterForm';
 import { BASE_URL } from '@/const';
 
 interface PageProps {
-  params: { userId: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ userId: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 function ForbiddenPage() {
