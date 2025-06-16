@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,20 +18,56 @@ import CustomFormField, { FormFieldType } from '../CustomFormField';
 import { Doctors, GenderOptions, PatientFormDefaultValues } from '@/constants';
 import { useRecaptchaToken } from '@/components/ReCapthcaV3';
 
-const RegisterForm = ({ user }: { user: User }) => {
+interface PrefilledData {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+}
+
+interface RegisterFormProps {
+  user: User;
+  prefilledData?: PrefilledData;
+}
+
+const RegisterForm = ({ user, prefilledData }: RegisterFormProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const getRecaptchaToken = useRecaptchaToken('register_form');
+
+  // Create full name from first and last name if available
+  const getFullName = () => {
+    if (prefilledData?.firstName || prefilledData?.lastName) {
+      return `${prefilledData.firstName || ''} ${prefilledData.lastName || ''}`.trim();
+    }
+    return '';
+  };
 
   const form = useForm<z.infer<typeof PatientFormValidation>>({
     resolver: zodResolver(PatientFormValidation),
     defaultValues: {
       ...PatientFormDefaultValues,
-      name: '',
-      email: '',
-      phone: '',
+      name: getFullName(),
+      email: prefilledData?.email || '',
+      phone: prefilledData?.phone || '',
     },
   });
+
+  // Update form values when prefilledData changes
+  useEffect(() => {
+    if (prefilledData) {
+      const fullName = getFullName();
+      if (fullName) {
+        form.setValue('name', fullName);
+      }
+      if (prefilledData.email) {
+        form.setValue('email', prefilledData.email);
+      }
+      if (prefilledData.phone) {
+        form.setValue('phone', prefilledData.phone);
+      }
+    }
+  }, [prefilledData, form]);
 
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
     setIsLoading(true);

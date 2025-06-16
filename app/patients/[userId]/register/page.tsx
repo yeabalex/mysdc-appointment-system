@@ -8,6 +8,13 @@ interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+interface PrefilledData {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+}
+
 function ForbiddenPage() {
   return (
     <div className="flex h-screen max-h-screen items-center justify-center">
@@ -53,6 +60,27 @@ const Register = async ({ params, searchParams }: PageProps) => {
       return <ForbiddenPage />;
     }
 
+    // Extract prefilled data from search parameters
+    const prefilledData: PrefilledData = {};
+    
+    const firstName = resolvedSearchParams.firstName;
+    const lastName = resolvedSearchParams.lastName;
+    const email = resolvedSearchParams.email;
+    const phone = resolvedSearchParams.phone;
+
+    if (firstName && typeof firstName === 'string') {
+      prefilledData.firstName = firstName;
+    }
+    if (lastName && typeof lastName === 'string') {
+      prefilledData.lastName = lastName;
+    }
+    if (email && typeof email === 'string') {
+      prefilledData.email = email;
+    }
+    if (phone && typeof phone === 'string') {
+      prefilledData.phone = phone;
+    }
+
     const user = { $id: userId };
 
     return (
@@ -66,7 +94,7 @@ const Register = async ({ params, searchParams }: PageProps) => {
               alt="Logo"
               className="h-8 w-fit"
             />
-            <RegisterForm user={user} />
+            <RegisterForm user={user} prefilledData={prefilledData} />
             <p className="copyright py-12">© 2024 CarePulse</p>
           </div>
         </section>
