@@ -36,12 +36,15 @@ interface CustomProps {
   placeholder?: string;
   iconSrc?: string;
   iconAlt?: string;
-  description?: string;
   disabled?: boolean;
   dateFormat?: string;
   showTimeSelect?: boolean;
   children?: React.ReactNode;
   renderSkeleton?: (field: any) => React.ReactNode;
+  className?: string;
+  value?: any;
+  // Add any other props you might need
+  [key: string]: any;
 }
 
 const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
@@ -162,19 +165,25 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
 };
 
 const CustomFormField = (props: CustomProps) => {
-  const { control, fieldType, name, label } = props;
-
+  const { control, fieldType, name, label, className, disabled, ...otherProps } = props;
+  
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex-1">
+        <FormItem className={`flex-1 ${className || ''}`}>
           {fieldType !== FormFieldType.CHECKBOX && label && (
             <FormLabel htmlFor={name}>{label}</FormLabel>
           )}
-
-          <RenderField field={field} props={props} />
+          <RenderField 
+            field={field} 
+            props={{
+              ...props,
+              disabled: disabled || field.disabled,
+              ...otherProps
+            }} 
+          />
           <FormMessage className="shad-error" />
         </FormItem>
       )}
