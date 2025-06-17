@@ -72,21 +72,24 @@ const RegisterForm = ({ user, prefilledData }: RegisterFormProps) => {
     if (prefilledData) {
       const fullName = getFullName();
       if (fullName) {
-        form.setValue('name', fullName);
+        form.setValue('name', fullName, { shouldValidate: true });
       }
       if (prefilledData.email) {
-        form.setValue('email', prefilledData.email);
+        form.setValue('email', prefilledData.email, { shouldValidate: true });
       }
       if (prefilledData.phone) {
-        form.setValue('phone', prefilledData.phone);
+        form.setValue('phone', prefilledData.phone, { shouldValidate: true });
       }
-      // Force form to re-render with new values
-      form.trigger();
+      
+      // Clear any existing errors for prefilled fields
+      form.clearErrors(['name', 'email', 'phone']);
+      
+      // Trigger validation to ensure form state is updated
+      setTimeout(() => {
+        form.trigger(['name', 'email', 'phone']);
+      }, 0);
     }
   }, [prefilledData, form]);
-
-  // Get current form values to ensure they're displayed
-  const formValues = form.watch();
 
   const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
     setIsLoading(true);
@@ -139,7 +142,6 @@ const RegisterForm = ({ user, prefilledData }: RegisterFormProps) => {
             iconAlt="user"
             disabled={hasPrefilledData('name')}
             className={hasPrefilledData('name') ? 'opacity-60 pointer-events-none' : ''}
-            value={formValues.name || getFullName()}
           />
 
           <div className="flex flex-col gap-6 xl:flex-row">
@@ -153,7 +155,6 @@ const RegisterForm = ({ user, prefilledData }: RegisterFormProps) => {
               iconAlt="email"
               disabled={hasPrefilledData('email')}
               className={hasPrefilledData('email') ? 'opacity-60 pointer-events-none' : ''}
-              value={formValues.email || prefilledData?.email || ''}
             />
 
             <CustomFormField
@@ -164,12 +165,10 @@ const RegisterForm = ({ user, prefilledData }: RegisterFormProps) => {
               placeholder="(555) 123-4567"
               disabled={hasPrefilledData('phone')}
               className={hasPrefilledData('phone') ? 'opacity-60 pointer-events-none' : ''}
-              value={formValues.phone || prefilledData?.phone || ''}
             />
           </div>
 
           <div className="flex flex-col gap-6 xl:flex-row">
-
             <CustomFormField
               fieldType={FormFieldType.SKELETON}
               control={form.control}
