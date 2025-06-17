@@ -32,7 +32,7 @@ export default function AppointmentUpdates({ initialData }: AppointmentUpdatesPr
         console.error('Error fetching appointments:', err);
         setError('Network Error.');
       }
-    }, 10000);
+    }, 5000);
 
     return () => clearInterval(intervalId);
   }, []);
